@@ -7,13 +7,34 @@ int tape[MAX] = {0};
 int ptr = 0;
 
 void parse(std::string code, bool loop = false) {
-  std::cout << "code: " << code << std::endl;
+  /* std::cout << "code: " << code << std::endl; */
   int start, end;
   int loop_cnt = 0;
 
   do {
     for (int i = 0; i < code.size(); ++i) {
       int token = code[i];
+
+      switch (token) {
+      case '[':
+        if (loop_cnt == 0)
+          start = i;
+        loop_cnt++;
+        break;
+
+      case ']':
+        loop_cnt--;
+        if (loop_cnt == 0) {
+          end = i;
+          parse(code.substr(start + 1, end - start - 1), true);
+        }
+        break;
+      }
+
+      if (loop_cnt > 0) {
+        continue;
+      }
+
       switch (token) {
       case '>':
         ptr++;
@@ -32,18 +53,6 @@ void parse(std::string code, bool loop = false) {
         break;
       case ',':
         std::cin >> tape[ptr];
-        break;
-      case '[':
-        if (loop_cnt == 0)
-          start = i;
-        loop_cnt++;
-        break;
-      case ']':
-        loop_cnt--;
-        if (loop_cnt == 0) {
-          end = i;
-          parse(code.substr(start + 1, end - start - 1), true);
-        }
         break;
       default:
         break;
@@ -72,6 +81,6 @@ int main(int argc, char **argv) {
   }
 
   parse(code);
-  dump();
+  /* dump(); */
   return 0;
 }
